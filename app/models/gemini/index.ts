@@ -126,7 +126,7 @@ export class GeminiModel extends Model {
     shouldParse = true
   ) {
     // candidateCount: setting is being rejected or ignored. workaround:
-    promptText = promptText + "\nGenerate 8 responses. " +
+    promptText = promptText + "\nGenerate 5 responses. " +
       "Each response must start with: " + D0 + " and end with: " + D1;
     console.log('🚀 prompt text: ', promptText);
 

@@ -18,16 +18,17 @@
  */
 import '@components/shared_components/primitives/error_message';
 
-import {MobxLitElement} from '@adobe/lit-mobx';
-import {html} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { html } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-import {wordcraftCore} from '@core/wordcraft_core';
-import {AppService} from '@services/app_service';
-import {DocumentStoreService} from '@services/document_store_service';
+import { wordcraftCore } from '@core/wordcraft_core';
+import { AppService } from '@services/app_service';
+import { DocumentStoreService } from '@services/document_store_service';
 
-import {styles} from './onboarding.css';
-import {styles as sharedStyles} from './shared.css';
+import { styles } from './onboarding.css';
+import { styles as sharedStyles } from './shared.css';
+import { setNewGenAI } from '@models/gemini/api';
 
 /**
  * The wordcraft onboarding flow - allows the user to choose what to "seed"
@@ -70,15 +71,31 @@ export class OnboardingComponent extends MobxLitElement {
       this.appService.initializeEditor();
     };
 
+    const setAPIKey = (input: string) => {
+      setNewGenAI(input);
+      this.documentStoreService.storeAPIKeyInput(input);
+      this.appService.initializeEditor();
+    };
+
+    const handleSubmit = () => {
+      const inputElement = this.shadowRoot.getElementById('api-key-input') as HTMLInputElement;
+      if (inputElement) {
+        const inputValue = inputElement.value;
+        setAPIKey(inputValue);
+      }
+    };
+
     return html`
       <div class="get-started">
+        <input type="text" id="api-key-input" placeholder="Enter your API key" />
+        <button @click=${handleSubmit}>Submit</button>
         <button @click=${getStarted}>Start a New Story</button>
       </div>
     `;
   }
 
   renderUserStories() {
-    const {isLoading, userDocuments} = this.documentStoreService;
+    const { isLoading, userDocuments } = this.documentStoreService;
 
     let contents = html``;
     if (isLoading) {
@@ -94,25 +111,25 @@ export class OnboardingComponent extends MobxLitElement {
         <div class="user-stories-header">Or load an existing story...</div>
         <div class="user-stories-list">
           ${userDocuments.map((doc) => {
-            const onClick = () => {
-              this.documentStoreService.loadSavedDocument(doc);
-            };
-            return html`
+        const onClick = () => {
+          this.documentStoreService.loadSavedDocument(doc);
+        };
+        return html`
               <div @click=${onClick} class="story-preview">
                 ${doc.text.split('\n').map((p) => html`<p>${p}</p>`)}
                 <mwc-icon
                   class="delete-icon"
                   @click=${async (e: Event) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    await this.documentStoreService.deleteDocument(doc.id);
-                  }}
+            e.preventDefault();
+            e.stopPropagation();
+            await this.documentStoreService.deleteDocument(doc.id);
+          }}
                 >
                   clear
                 </mwc-icon>
               </div>
             `;
-          })}
+      })}
         </div>
       `;
       // clang-format on

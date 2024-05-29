@@ -113,6 +113,10 @@ export class DocumentStoreService extends Service {
     });
   }
 
+  public storeAPIKeyInput(input: string) {
+    this.localStorageService.setLastAPIKey(input);
+  }
+
   async loadSavedDocument(document: SavedDocument) {
     let stateSnapshot: StateSnapshot | null = null;
     try {

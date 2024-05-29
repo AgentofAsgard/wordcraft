@@ -19,8 +19,12 @@
 
 // set up Gemini generative AI library
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+let genAI = new GoogleGenerativeAI(process.env.API_KEY);
 // Remember to set an environment variable for API_KEY in .env
+
+export function setNewGenAI(api: string) {
+  genAI = new GoogleGenerativeAI(api);
+}
 
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import { DialogParams } from '@core/shared/interfaces';
@@ -29,19 +33,19 @@ import { DialogParams } from '@core/shared/interfaces';
 const safetySettings = [
   {
     category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    threshold: HarmBlockThreshold.BLOCK_NONE,
   },
   {
     category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    threshold: HarmBlockThreshold.BLOCK_NONE,
   },
   {
     category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    threshold: HarmBlockThreshold.BLOCK_NONE,
   },
   {
     category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    threshold: HarmBlockThreshold.BLOCK_NONE,
   },
 ];
 

@@ -32,6 +32,7 @@ export interface LocalStorageState {
   starred: ModelResult[];
   documentId: string | null;
   savedDocuments: SavedDocuments;
+  lastAPIKey: string | null;
 }
 
 const STATE_PREFIX = 'wordcraft-state';
@@ -42,6 +43,7 @@ const META_TEXT_KEY = STATE_PREFIX + '@meta-text';
 const STARRED_RESULTS_KEY = STATE_PREFIX + '@starred-results';
 const DOCUMENT_ID = STATE_PREFIX + '@document-id';
 const SAVED_DOCUMENTS = STATE_PREFIX + '@saved-documents';
+const LAST_API_KEY = STATE_PREFIX + '@saved-api-key';
 
 /**
  * Responsible for reading to and from local storage
@@ -62,6 +64,7 @@ export class LocalStorageService extends Service {
       STARRED_RESULTS_KEY,
       DOCUMENT_ID,
       SAVED_DOCUMENTS,
+      LAST_API_KEY
     ];
     for (const key of keysToClear) {
       window.localStorage.removeItem(key);
@@ -98,6 +101,14 @@ export class LocalStorageService extends Service {
 
   getDocumentId(): string | null {
     return this.getState().documentId;
+  }
+
+  setLastAPIKey(key: string) {
+    this.setState(LAST_API_KEY, key);
+  }
+
+  getLastAPIKey(): string | null {
+    return this.getState().lastAPIKey;
   }
 
   loadDocuments() {
@@ -145,6 +156,7 @@ export class LocalStorageService extends Service {
       starred: this.getData<ModelResult[]>(STARRED_RESULTS_KEY, []),
       documentId: this.getData<string | null>(DOCUMENT_ID, null),
       savedDocuments: this.getData<SavedDocuments>(SAVED_DOCUMENTS, {}),
+      lastAPIKey: this.getData<string | null>(LAST_API_KEY, null),
     };
   }
 }

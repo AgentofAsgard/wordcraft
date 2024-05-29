@@ -34,6 +34,7 @@ import {ConfigService} from './config_service';
 import {WordcraftContext} from '../../context';
 
 import {DocumentStoreService} from './document_store_service';
+import { setNewGenAI } from '@models/gemini/api';
 
 interface ServiceProvider {
   appService: AppService;
@@ -96,10 +97,14 @@ export class InitializationService extends Service {
       );
 
       // We'll only go directly to the editor if there exists a documentId
-      const {documentId} = localStorageState;
+      const {documentId, lastAPIKey} = localStorageState;
       if (documentId != null) {
         documentStoreService.setDocumentId(documentId);
         appService.goToEditor();
+      }
+
+      if(lastAPIKey) {
+        setNewGenAI(lastAPIKey)
       }
     }
 
